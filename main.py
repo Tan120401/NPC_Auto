@@ -1,16 +1,19 @@
-# This is a sample Python script.
+from time import sleep
 
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+from AppOpener import open
+from pywinauto import Application, Desktop
 
+from NPC_Auto.lib_common.common_lib import *
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
+#Mở app settings
+open('Settings', match_closest=False)
+sleep(2)
+app = Application(backend='uia').connect(title_re='Settings')
+target_window = app.window(title_re='Settings')
 
-
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    print_hi('PyCharm')
-
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+# List all window
+# all_window_active = Desktop(backend='uia').windows()
+# for win in all_window_active:
+#     print(win.window_text())
+object_click(target_window,'Cloud storage', '','Text')
+print(target_window.print_control_identifiers())
