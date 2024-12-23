@@ -1,17 +1,7 @@
-import os
-import sys
-
 from NPC_Auto.lib_common.common_lib import *
-from AppOpener import open
-from pywinauto import Application, Desktop
-
-
 
 #Mở app settings
-open('Settings', match_closest=False)
-sleep(2)
-app = Application(backend='uia').connect(title_re='Settings')
-target_window = app.window(title_re='Settings')
+target_window = open_app('Settings')
 
 # Danh sách các object
 dic_object_list = {
