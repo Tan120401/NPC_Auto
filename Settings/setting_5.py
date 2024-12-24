@@ -9,4 +9,6 @@ object_is_exist(target_window,'Brightness & color','', 'Text')
 object_is_exist(target_window,'Scale & layout','', 'Text')
 object_is_exist(target_window,'Related settings','', 'Text')
 
+# Đóng app
+target_window.close()
 

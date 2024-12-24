@@ -1,0 +1,9 @@
+
+Setting 3
+Danh sach pass.
+	Find a setting, Home, System, Bluetooth & devices, Network & internet, Personalization, Apps, Accounts, Gaming, Accessibility, Privacy & security, Windows Update, 
+Danh sach fail.
+	Time & languagee, 
+Setting 4
+Danh sach pass.
+	Home, Recommended settings, Cloud storage, Bluetooth devices, Personalize your device, Try Microsoft 365, 

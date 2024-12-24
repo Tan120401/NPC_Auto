@@ -23,3 +23,6 @@ if len(titles) == len(control_types):
         object_is_exist(target_window, title, auto_id, control_type)
 else:
     print("Title và control type không đồng nhất")
+
+# Đóng app
+target_window.close()
