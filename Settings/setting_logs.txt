@@ -1,9 +1,11 @@
-
-Setting 3
-Danh sach pass.
-	Find a setting, Home, System, Bluetooth & devices, Network & internet, Personalization, Apps, Accounts, Gaming, Accessibility, Privacy & security, Windows Update, 
-Danh sach fail.
-	Time & languagee, 
-Setting 4
-Danh sach pass.
-	Home, Recommended settings, Cloud storage, Bluetooth devices, Personalize your device, Try Microsoft 365, 
+LOG INFORMATION
+*SETTING 3
+-List of pass: Find a setting, Home, System, Bluetooth & devices, Network & internet, Personalization, Apps, Accounts, Time & language, Gaming, Accessibility, Privacy & security, Windows Update
+*SETTING 4
+-List of pass: Home, Recommended settings, Cloud storage, Bluetooth devices, Personalize your device, Try Microsoft 365
+*SETTING 5
+-List of pass: System
+-List of fail: Displays, Brightness & color, Scale & layout, Related settings
+*SETTING 12
+-List of pass: System, Sound, Input, Advanced
+-List of fail: Outputs
