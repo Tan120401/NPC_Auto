@@ -66,60 +66,84 @@ def _setting(testcase_name, app, dic_object_list):
     else:
         print("Dic object list không đồng nhất")
 
-    # Close app
-    target_window.close()
+    # Focus Home settings
+    home_click = target_window.child_window(title='Home', auto_id='', control_type='ListItem')
+    home_click.click_input()
     write_log_setting(testcase_name, pass_list, fail_list)
 
-# Function test case setting 3
-def _setting_3():
-    # dictionaries
-    dic_of_objects = {
-        'title': 'Find a setting, Home, System, Bluetooth & devices, Network & internet, Personalization, Apps, Accounts, '
-                 'Time & language, Gaming, Accessibility, Privacy & security, Windows Update',
-        'auto_id': ', , , , , , , , , , , , ',
-        'control_type': 'Text, ListItem, ListItem, ListItem, ListItem, ListItem, ListItem, ListItem, ListItem, ListItem, ListItem, ListItem, ListItem',
-        'object_handle': 'view, view, view, view, view, view, view, view, view, view, view, view, view'
-    }
-    _setting("Setting 3", "Settings", dic_of_objects)
+# # Function test case setting 3
+# def _setting_3():
+#     # dictionaries
+#     dic_of_objects = {
+#         'title': 'Find a setting, Home, System, Bluetooth & devices, Network & internet, Personalization, Apps, Accounts, '
+#                  'Time & language, Gaming, Accessibility, Privacy & security, Windows Update',
+#         'auto_id': ', , , , , , , , , , , , ',
+#         'control_type': 'Text, ListItem, ListItem, ListItem, ListItem, ListItem, ListItem, ListItem, ListItem, ListItem, ListItem, ListItem, ListItem',
+#         'object_handle': 'view, view, view, view, view, view, view, view, view, view, view, view, view'
+#     }
+#     _setting("Setting 3", "Settings", dic_of_objects)
+#
+# # Function test case setting 4
+# def _setting_4():
+#     # dictionaries
+#     dic_of_objects = {
+#         'title': 'Home, Recommended settings, Cloud storage, Bluetooth devices, Personalize your device, Try Microsoft 365',
+#         'auto_id': ", TitleContent, , TitleContent, TitleContent, ",
+#         'control_type': 'ListItem, Text, Text, Text, Text, Text',
+#         'object_handle': 'click, view, view, view, view, view'
+#     }
+#     _setting("Setting 4", "Settings", dic_of_objects)
+#
+# # Function test case setting 5
+# def _setting_5():
+#     # dictionaries
+#     dic_of_objects = {
+#         'title': 'System, Display, Brightness & color, Scale & layout, Related settings',
+#         'auto_id': ", , , , ",
+#         'control_type': 'ListItem, Text, Text, Text, Text',
+#         'object_handle': 'click, click, view, view, view'
+#     }
+#     _setting("Setting 5", "Settings", dic_of_objects)
+#
+# # Function test case setting 5
+# def _setting_12():
+#     # dictionaries
+#     dic_of_objects = {
+#         'title': 'System, Sound, Output, Input, Advanced',
+#         'auto_id': ", , , , ",
+#         'control_type': 'ListItem, Text, Text, Text, Text',
+#         'object_handle': 'click, click, view, view, view'
+#     }
+#     _setting("Setting 12", "Settings", dic_of_objects)
 
-# Function test case setting 4
-def _setting_4():
+# Function test case setting 13
+def _setting_13():
     # dictionaries
     dic_of_objects = {
-        'title': 'Home, Recommended settings, Cloud storage, Bluetooth devices, Personalize your device, Try Microsoft 365',
-        'auto_id': ", TitleContent, , TitleContent, TitleContent, ",
-        'control_type': 'ListItem, Text, Text, Text, Text, Text',
-        'object_handle': 'click, view, view, view, view, view'
+        'title': 'System, Notifications, Do not disturb, Turn on do not disturb automatically, Set priority notifications, Focus, Notifications from apps and other senders',
+        'auto_id': ", , , , , , ",
+        'control_type': 'ListItem, Text, Text, Text, Text, Text, Text',
+        'object_handle': 'click, click, view, view, view, view, view'
     }
-    _setting("Setting 4", "Settings", dic_of_objects)
+    _setting("Setting 13", "Settings", dic_of_objects)
 
-# Function test case setting 5
-def _setting_5():
+# Function test case setting 18
+def _setting_18():
     # dictionaries
     dic_of_objects = {
-        'title': 'System, Display, Brightness & color, Scale & layout, Related settings',
-        'auto_id': ", , , , ",
-        'control_type': 'ListItem, Text, Text, Text, Text',
-        'object_handle': 'click, click, view, view, view'
+        'title': 'System, Power & battery, Power & battery',
+        'auto_id': ", , ",
+        'control_type': 'ListItem, Text, Text',
+        'object_handle': 'click, click, view'
     }
-    _setting("Setting 5", "Settings", dic_of_objects)
-
-# Function test case setting 5
-def _setting_12():
-    # dictionaries
-    dic_of_objects = {
-        'title': 'System, Sound, Output, Input, Advanced',
-        'auto_id': ", , , , ",
-        'control_type': 'ListItem, Text, Text, Text, Text',
-        'object_handle': 'click, click, view, view, view'
-    }
-    _setting("Setting 12", "Settings", dic_of_objects)
+    _setting("Setting 14", "Settings", dic_of_objects)
 # Call function execute test case
-_setting_3()
-_setting_4()
-_setting_5()
-_setting_12()
-
+# _setting_3()
+# _setting_4()
+# _setting_5()
+# _setting_12()
+# _setting_13()
+_setting_18()
 # Show result on UI
 for result in result_of_testcase:
     txt_result.append(f"{result}\n")
