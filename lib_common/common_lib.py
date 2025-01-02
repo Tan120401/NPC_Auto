@@ -4,6 +4,15 @@ import pyautogui
 from AppOpener import open
 from pywinauto import Application, Desktop
 
+# Move to object and scroll
+def _scroll_center(target_window, title, auto_id, control_type):
+    scroll_bar = target_window.child_window(title=title, auto_id=auto_id, control_type=control_type)
+    scroll_bar_rec = scroll_bar.rectangle()
+    pyautogui.moveTo(scroll_bar_rec.left + 20, scroll_bar_rec.top - 20)
+    sleep(2)
+    pyautogui.scroll(-800)
+
+# Function open app return target windows
 def _open_app(app_name):
     open(app_name, match_closest=False)
     sleep(5)
@@ -16,7 +25,6 @@ def _object_is_exist(window, title, auto_id, control_type):
     object_select = window.child_window(title=title, auto_id=auto_id, control_type=control_type)
     is_exist = False
     if object_select.exists():
-        # print(title, 'viewed')
         sleep(2)
         is_exist = True
     return is_exist
@@ -27,7 +35,6 @@ def _object_click(window, title, auto_id, control_type):
     is_exist = False
     if object_select.exists():
         object_select.click_input()
-        # print(title, 'clicked')
         is_exist = True
         sleep(2)
     return is_exist

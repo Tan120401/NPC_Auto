@@ -7,7 +7,7 @@ from PyQt6 import QtWidgets
 from pywinauto import mouse, Desktop
 
 from NPC_Auto.lib_common.common_lib import _object_click, _open_app, _object_is_exist, _object_click_by_coordinates, \
-    _find_open_window
+    _find_open_window, _scroll_center
 from PyQt6 import uic
 import pyautogui
 
@@ -241,23 +241,103 @@ def _setting_33():
 
     # dictionaries
     dic_of_objects = {
-        'title': 'System, Recovery, Reset this PC, Advanced startup',
-        'auto_id': ", , , ",
-        'control_type': 'ListItem, Group, Text, Text',
-        'object_handle': 'click, click, view, view'
+        'title': 'Recovery, Reset this PC, Advanced startup',
+        'auto_id': ", , ",
+        'control_type': 'Group, Text, Text',
+        'object_handle': 'click, view, view'
     }
     _setting("Setting 33", "Settings", dic_of_objects)
 
+# Function test case setting 38
+def _setting_38():
+    target_window = _open_app('Settings')
+    _object_click(target_window, 'System', '', 'ListItem')
+
+    # Scroll down
+    _scroll_center(target_window, 'Storage', '', 'Group')
+
+    # dictionaries
+    dic_of_objects = {
+        'title': 'About, Device specifications, Windows specifications, Support, Related',
+        'auto_id': ", , , , ",
+        'control_type': 'Group, Group, Group, Group, Text',
+        'object_handle': 'click, view, view, view, view'
+    }
+    _setting("Setting 38", "Settings", dic_of_objects)
+
+# Function test case setting 41
+def _setting_41():
+    target_window = _open_app('Settings')
+
+    # dictionaries
+    dic_of_objects = {
+        'title': 'Bluetooth & devices, View more devices, Bluetooth, Other devices, Related settings',
+        'auto_id': ", , , , ",
+        'control_type': 'ListItem, Button, Text, Text, Text',
+        'object_handle': 'click, click, view, view, view'
+    }
+    _setting("Setting 41", "Settings", dic_of_objects)
+
+# Function test case setting 42
+def _setting_42():
+    target_window = _open_app('Settings')
+
+    # dictionaries
+    dic_of_objects = {
+        'title': 'Bluetooth & devices, Add device, Bluetooth',
+        'auto_id': ", , ",
+        'control_type': 'ListItem, Button, Button',
+        'object_handle': 'click, click, click'
+    }
+    _setting("Setting 42", "Settings", dic_of_objects)
+
+    target_window = _open_app('Settings')
+    _object_click(target_window, 'System', '', 'ListItem')
+
+    # Scroll down
+    _scroll_center(target_window, 'Storage', '', 'Group')
+
+    # The List contains the pass fail objects
+    pass_list = []
+    fail_list = []
+    titles = ['Bluetooth & devices', 'Add device']
+    control_types = ['ListItem', 'Button']
+    auto_ids = ['', '']
+    object_handles = ['click', 'view']
+
+    # Check that the lengths of the lists match
+    if len(titles) == len(control_types) == len(auto_ids) == len(object_handles):
+        is_exist = True
+        for title, auto_id, control_type, object_handle in zip(titles, auto_ids, control_types, object_handles):
+            if object_handle == 'click':
+                is_exist = _object_click(target_window, title, auto_id, control_type)
+            elif object_handle == 'view':
+                is_exist = _object_is_exist(target_window, title, auto_id, control_type)
+            if is_exist:
+                pass_list.append(title)
+            else:
+                fail_list.append(title)
+    else:
+        print("Dic object list không đồng nhất")
+
+
+    # Focus Home settings
+    home_click = target_window.child_window(title='Home', auto_id='', control_type='ListItem')
+    home_click.click_input()
+    write_log_setting('Setting 42', pass_list, fail_list)
 # Call function execute test case
-_setting_3()
-_setting_4()
-_setting_5()
-_setting_12()
-_setting_13()
-_setting_18()
-_setting_31()
-_setting_32()
-_setting_33()
+# _setting_3()
+# _setting_4()
+# _setting_5()
+# _setting_12()
+# _setting_13()
+# _setting_18()
+# _setting_31()
+# _setting_32()
+# _setting_33()
+# _setting_38()
+# _setting_41()
+_setting_42()
 
 # Show result on UI
 for result in result_of_testcase:
