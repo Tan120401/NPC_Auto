@@ -1,4 +1,3 @@
 LOG INFORMATION
-*SETTING 42
--List of pass: Bluetooth & devices, Add device
--List of fail: Bluetooth
+*SETTING 55
+-List of pass: Bluetooth & devices, Touchpad, Touchpad, Gestures & interaction, Related settings
