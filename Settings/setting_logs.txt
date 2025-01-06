@@ -1,3 +1,3 @@
 LOG INFORMATION
-*SETTING 55
--List of pass: Bluetooth & devices, Touchpad, Touchpad, Gestures & interaction, Related settings
+*SETTING 63
+-List of pass: Network & internet, Wi-Fi, Wi-Fi, SRV_Samsung_EV1_Viettel_5 properties, Show available networks, Manage known networks, Hardware properties, Random hardware addresses

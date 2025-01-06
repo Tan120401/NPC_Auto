@@ -7,10 +7,12 @@ from PyQt6 import QtWidgets
 from pywinauto import mouse, Desktop, Application
 from pywinauto.findwindows import find_window
 
-from NPC_Auto.lib_common.common_lib import _object_click, _open_app, _object_is_exist, _object_click_by_coordinates, \
-    _find_open_window, _scroll_center
+from NPC_Auto.lib_common.common_lib import _object_click, _open_app, _object_find, _object_click_by_coordinates, \
+    _find_open_window, _scroll_center, _object_find, get_connected_wifi
 from PyQt6 import uic
 import pyautogui
+
+from NPC_Auto.main import target_window
 
 # Initialize UI
 app = QtWidgets.QApplication(sys.argv)
@@ -64,8 +66,8 @@ def _setting(testcase_name, app, dic_object_list):
             if object_handle == 'click':
                 is_exist = _object_click(target_window, title, auto_id, control_type)
             elif object_handle == 'view':
-                is_exist = _object_is_exist(target_window, title, auto_id, control_type)
-            if is_exist:
+                is_exist = _object_find(target_window, title, auto_id, control_type)
+            if isinstance(is_exist, target_window.child_window().__class__):
                 pass_list.append(title)
             else:
                 fail_list.append(title)
@@ -150,9 +152,7 @@ def _setting_31():
     _object_click(target_window, 'System', '', 'ListItem')
 
     # Scroll down
-    pyautogui.moveTo(7740, 917)
-    pyautogui.scroll(-500)
-
+    _scroll_center(target_window, 'Storage', '', 'Group')
     # The List contains the pass fail objects
     pass_list = []
     fail_list = []
@@ -167,8 +167,8 @@ def _setting_31():
             if object_handle == 'click':
                 is_exist = _object_click(target_window, title, auto_id, control_type)
             elif object_handle == 'view':
-                is_exist = _object_is_exist(target_window, title, auto_id, control_type)
-            if is_exist:
+                is_exist = _object_find(target_window, title, auto_id, control_type)
+            if isinstance(is_exist, target_window.child_window().__class__):
                 pass_list.append(title)
             else:
                 fail_list.append(title)
@@ -186,25 +186,23 @@ def _setting_32():
     _object_click(target_window, 'System', '', 'ListItem')
 
     # Scroll down
-    pyautogui.moveTo(7740, 917)
-    pyautogui.scroll(-500)
+    _scroll_center(target_window, 'Storage', '', 'Group')
 
     # The List contains the pass fail objects
     pass_list = []
     fail_list = []
 
-    is_troubleshoot = _object_click(target_window, 'Troubleshoot', '', 'Group')
+    is_troubleshoot = _object_click(target_window, 'Troubleshoot', '', 'Text')
     is_other_troubleshoot = _object_click(target_window, 'Other troubleshooters', '', 'Text')
 
     # Assess object pass/fail
-    if is_troubleshoot:
-        pass_list.append('Troubleshoot')
-    else:
-        fail_list.append('Troubleshoot')
-    if is_other_troubleshoot:
-        pass_list.append('Other troubleshooters')
-    else:
-        fail_list.append('Other troubleshooters')
+    list_of_object = [is_troubleshoot, is_other_troubleshoot]
+    for obj in list_of_object:
+        if isinstance(obj, target_window.child_window().__class__):
+            pass_list.append(obj.window_text())
+        else:
+            fail_list.append(obj)
+
     # Click troubleshoot audio
     is_audio = _object_click(target_window, 'Audio', '', 'Text')
     if is_audio:
@@ -238,14 +236,13 @@ def _setting_33():
     _object_click(target_window, 'System', '', 'ListItem')
 
     # Scroll down
-    pyautogui.moveTo(7740, 917)
-    pyautogui.scroll(-500)
+    _scroll_center(target_window, 'Storage', '', 'Group')
 
     # dictionaries
     dic_of_objects = {
         'title': 'Recovery, Reset this PC, Advanced startup',
         'auto_id': ", , ",
-        'control_type': 'Group, Text, Text',
+        'control_type': 'Text, Text, Text',
         'object_handle': 'click, view, view'
     }
     _setting("Setting 33", "Settings", dic_of_objects)
@@ -269,8 +266,6 @@ def _setting_38():
 
 # Function test case setting 41
 def _setting_41():
-    target_window = _open_app('Settings')
-
     # dictionaries
     dic_of_objects = {
         'title': 'Bluetooth & devices, View more devices, Bluetooth, Other devices, Related settings',
@@ -278,6 +273,7 @@ def _setting_41():
         'control_type': 'ListItem, Button, Text, Text, Text',
         'object_handle': 'click, click, view, view, view'
     }
+
     _setting("Setting 41", "Settings", dic_of_objects)
 
 # Function test case setting 42
@@ -289,13 +285,8 @@ def _setting_42():
     pass_list = []
     fail_list = []
 
-
-    is_bluetooth_device = target_window.child_window(title='Bluetooth & devices', control_type='ListItem')
-    is_bluetooth_device.click_input()
-    sleep(2)
-    is_add_device = target_window.child_window(title='Add device', control_type='Text')
-    is_add_device.click_input()
-    sleep(2)
+    is_bluetooth_device = _object_click(target_window, 'Bluetooth & devices', '', 'ListItem')
+    is_add_device = _object_click(target_window, 'Add device', '', 'Text')
 
     # Focus add device window
 
@@ -303,20 +294,20 @@ def _setting_42():
     app_bluetooth = Application(backend='uia').connect(handle=window_handle)
     bluetooth_window = app_bluetooth.window(handle=window_handle)
 
-    is_bluetooth = bluetooth_window.child_window(title='Bluetooth', control_type='Button')
-    is_wireless = bluetooth_window.child_window(title='Wireless display or dock', control_type='Button')
-    is_everything = bluetooth_window.child_window(title='Everything else', control_type='Button')
-
+    print(bluetooth_window.print_control_identifiers())
+    is_bluetooth = _object_find(bluetooth_window, 'Bluetooth', 'BluetoothDevicesButton', 'Button')
+    is_wireless = _object_find(bluetooth_window, 'Wireless display or dock', 'DisplayDevicesButton', 'Button')
+    is_everything = _object_find(bluetooth_window, 'Everything else', 'OtherDevicesButton', 'Button')
 
     list_objects_check = [is_bluetooth_device, is_add_device, is_bluetooth, is_wireless, is_everything]
     # Check that the lengths of the lists match
 
     for obj in list_objects_check:
-        if obj:
+        if isinstance(obj, target_window.child_window().__class__):
             pass_list.append(obj.window_text())
         else:
-            fail_list.append(obj.window_text())
-
+            fail_list.append(obj)
+    bluetooth_window.close()
     # Focus Home settings
     home_click = target_window.child_window(title='Home', auto_id='', control_type='ListItem')
     home_click.click_input()
@@ -331,22 +322,20 @@ def _setting_43():
     pass_list = []
     fail_list = []
 
-    is_printers_scanners = target_window.child_window(title='Printers & scanners', control_type='Text')
-    is_printers_scanners.click_input()
-    sleep(2)
-    is_add_printer = target_window.child_window(title='Add a printer or scanner', control_type='Text')
-    is_printer_preferences = target_window.child_window(title='Printer preferences', control_type='Text')
-    is_related_settings = target_window.child_window(title='Related settings', control_type='Text')
-    is_print_server_properties = target_window.child_window(title='Print server properties', control_type='Text')
+    is_printers_scanners = _object_click(target_window, 'Printers & scanners', '', 'Text')
+    is_add_printer = _object_find(target_window, 'Add a printer or scanner', '', 'Text')
+    is_printer_preferences = _object_find(target_window, 'Printer preferences', '', 'Text')
+    is_related_settings = _object_find(target_window, 'Related settings', '', 'Text')
+    is_print_server_properties = _object_find(target_window, 'Print server properties', '', 'Text')
 
     #Focus add device window
     list_objects_check = [is_printers_scanners, is_add_printer, is_printer_preferences, is_related_settings, is_print_server_properties]
 
     for obj in list_objects_check:
-        if obj:
+        if isinstance(obj, target_window.child_window().__class__):
             pass_list.append(obj.window_text())
         else:
-            fail_list.append(obj.window_text())
+            fail_list.append(obj)
 
     # get value on or off
     is_manage_my_default_printer = target_window.child_window(title='Let Windows manage my default printer',control_type='Button')
@@ -398,21 +387,18 @@ def _setting_54():
 def _setting_55():
     target_window =  _open_app('Settings')
 
-    is_bluetooth_devices = target_window.child_window(title = 'Bluetooth & devices',control_type='ListItem')
-    is_bluetooth_devices.click_input()
+    is_bluetooth_devices = _object_click(target_window, 'Bluetooth & devices', '', 'ListItem')
 
     _scroll_center(target_window, 'Cameras', '', 'Group')
 
-    is_touchpad = target_window.child_window(title ='Touchpad',control_type= 'Group')
-    is_touchpad.click_input()
+    is_touchpad = _object_click(target_window, 'Touchpad', '', 'Group')
 
-    is_touchpad_in = target_window.child_window(title = 'Touchpad',control_type= 'Group')
+    is_touchpad_in = _object_find(target_window, 'Touchpad', '', 'Group')
 
-    is_gestures = target_window.child_window(title = 'Gestures & interaction',control_type= 'Text')
+    is_gestures = _object_find(target_window, 'Gestures & interaction', '', 'Text')
 
-    is_related_settings = target_window.child_window(title = 'Related settings',control_type= 'Text')
+    is_related_settings = _object_find(target_window, 'Related settings', '', 'Text')
 
-    target_window = _open_app('Settings')
 
     # The List contains the pass fail objects
     pass_list = []
@@ -422,16 +408,124 @@ def _setting_55():
     list_objects_check = [is_bluetooth_devices, is_touchpad, is_touchpad_in, is_gestures, is_related_settings]
 
     for obj in list_objects_check:
-        if obj:
+        if isinstance(obj, target_window.child_window().__class__):
             pass_list.append(obj.window_text())
         else:
-            fail_list.append(obj.window_text())
+            fail_list.append(obj)
 
     # Focus Home settings
     home_click = target_window.child_window(title='Home', auto_id='', control_type='ListItem')
     home_click.click_input()
     write_log_setting('Setting 55', pass_list, fail_list)
 
+# Function test case setting 57
+def _setting_57():
+    target_window =  _open_app('Settings')
+
+
+    is_bluetooth_devices = _object_click(target_window,'Bluetooth & devices', '', 'ListItem')
+    _scroll_center(target_window, 'Cameras', '', 'Group')
+
+    is_auto_play = _object_click(target_window, 'AutoPlay', '', 'Text')
+    print(target_window.print_control_identifiers())
+    is_auto_play_in = _object_find(target_window, 'Use AutoPlay for all media and devices', 'SystemSettings_Autoplay_IsEnabled_ToggleSwitch', 'Button')
+    is_auto_play_default = _object_find(target_window, 'Choose AutoPlay defaults', 'SettingsGroupControlTemplate_DisplayName', 'Text')
+    is_related_settings = _object_find(target_window, 'Related settings', 'RelatedLinksGroupHeader', 'Text')
+
+
+
+    # The List contains the pass fail objects
+    pass_list = []
+    fail_list = []
+
+    # Focus add device window
+    list_objects_check = [is_bluetooth_devices, is_auto_play, is_auto_play_in, is_auto_play_default, is_related_settings]
+
+    for obj in list_objects_check:
+        if isinstance(obj, target_window.child_window().__class__):
+            pass_list.append(obj.window_text())
+        else:
+            fail_list.append(obj)
+
+    # Focus Home settings
+    home_click = target_window.child_window(title='Home', auto_id='', control_type='ListItem')
+    home_click.click_input()
+    write_log_setting('Setting 57', pass_list, fail_list)
+
+# Function test case setting 58
+def _setting_58():
+    target_window =  _open_app('Settings')
+
+    # The List contains the pass fail objects
+    pass_list = []
+    fail_list = []
+
+    is_bluetooth_devices = _object_click(target_window,'Bluetooth & devices', '', 'ListItem')
+    _scroll_center(target_window, 'Cameras', '', 'Group')
+
+    is_auto_play = _object_click(target_window, 'AutoPlay', '', 'Text')
+
+    is_auto_play_default = target_window.child_window(title='Use AutoPlay for all media and devices',auto_id='SystemSettings_Autoplay_IsEnabled_ToggleSwitch', control_type='Button')
+    is_auto_play_default_state = is_auto_play_default.get_toggle_state()
+    if is_auto_play_default_state == 1:
+        pass_list.append(f'{is_auto_play_default.window_text()} default is ON')
+    else:
+        fail_list.append(f'{is_auto_play_default.window_text()} default is OFF')
+
+    is_removable_drive = target_window.child_window(title="Removable drive", auto_id="SystemSettings_Autoplay_StorageHandler_ComboBox", control_type="ComboBox")
+    removable_drive_value = is_removable_drive.selected_text()
+    if removable_drive_value is None:
+        pass_list.append('Removable drive is Select default app')
+    else:
+        fail_list.append('Removable drive is not Select default app')
+
+    is_memory_card = target_window.child_window(title="Memory card", auto_id="SystemSettings_Autoplay_CameraStorageHandler_ComboBox", control_type="ComboBox")
+
+    memory_card_value = is_memory_card.selected_text()
+    if memory_card_value is None:
+        pass_list.append('Memory card is Select default app')
+    else:
+        fail_list.append('Memory card is not Select default app')
+
+    is_default_app = target_window.child_window(title="Default app settings",auto_id="SystemSettings_XLinks_Local_System_Defaults_Link_HyperlinkButton",control_type="Hyperlink")
+    if is_default_app.exists():
+        pass_list.append(is_default_app.window_text())
+    else:
+        fail_list.append(is_default_app.window_text())
+    # Focus Home settings
+    home_click = target_window.child_window(title='Home', auto_id='', control_type='ListItem')
+    home_click.click_input()
+    write_log_setting('Setting 57', pass_list, fail_list)
+
+# Function Test case setting 63
+def _setting_63():
+    connected_wifi = get_connected_wifi()
+
+    _open_app('Settings')
+    # dictionaries
+    dic_of_objects = {
+        'title': f'Network & internet, Wi-Fi, Wi-Fi, {connected_wifi} properties, Show available networks, Manage known networks, Hardware properties, Random hardware addresses',
+        'auto_id': ", , , , , , , ",
+        'control_type': 'ListItem, Group, Button, Text, Text, Text, Text, Text',
+        'object_handle': 'click, click, view, view, view, view, view, view'
+    }
+    _setting("Setting 63", "Settings", dic_of_objects)
+
+# Function Test case setting 64
+def _setting_64():
+    connected_wifi = get_connected_wifi()
+
+    target_window = _open_app('Settings')
+
+    is_network = _object_click(target_window)
+    # dictionaries
+    dic_of_objects = {
+        'title': f'Network & internet, Wi-Fi, Wi-Fi, {connected_wifi} properties, Show available networks, Manage known networks, Hardware properties, Random hardware addresses',
+        'auto_id': ", , , , , , , ",
+        'control_type': 'ListItem, Group, Button, Text, Text, Text, Text, Text',
+        'object_handle': 'click, click, view, view, view, view, view, view'
+    }
+    _setting("Setting 63", "Settings", dic_of_objects)
 # Call function execute test case
 # _setting_3()
 # _setting_4()
@@ -448,7 +542,10 @@ def _setting_55():
 # _setting_43()
 # _setting_53()
 # _setting_54()
-_setting_55()
+# _setting_55()
+# _setting_57()
+# _setting_58()
+_setting_63()
 
 # Show result on UI
 for result in result_of_testcase:

@@ -1,7 +1,9 @@
 from time import sleep
 
 import pyautogui
+import subprocess
 from AppOpener import open
+import logging
 from pywinauto import Application, Desktop
 
 # Move to object and scroll
@@ -9,7 +11,7 @@ def _scroll_center(target_window, title, auto_id, control_type):
     scroll_bar = target_window.child_window(title=title, auto_id=auto_id, control_type=control_type)
     scroll_bar_rec = scroll_bar.rectangle()
     pyautogui.moveTo(scroll_bar_rec.left + 20, scroll_bar_rec.top - 20)
-    sleep(2)
+    sleep(3)
     pyautogui.scroll(-800)
 
 # Function open app return target windows
@@ -20,25 +22,37 @@ def _open_app(app_name):
     target_window = app.window(title_re=app_name)
     return target_window
 
-# Function view object exist
-def _object_is_exist(window, title, auto_id, control_type):
-    object_select = window.child_window(title=title, auto_id=auto_id, control_type=control_type)
-    is_exist = False
-    if object_select.exists():
-        sleep(2)
-        is_exist = True
-    return is_exist
-
 # Function click object exist
 def _object_click(window, title, auto_id, control_type):
     object_select = window.child_window(title=title, auto_id=auto_id, control_type=control_type)
-    is_exist = False
     if object_select.exists():
         object_select.click_input()
-        is_exist = True
         sleep(2)
-    return is_exist
+    else:
+        object_select = title
+    return object_select
 
+    # try:
+    #     object_select = window.child_window(title=title, auto_id=auto_id, control_type=control_type)
+    #     if object_select.exists():
+    #         object_select.click_input()
+    #         logging.info(f"Clicked on the object: {title}")
+    #     else:
+    #         logging.warning(f"Object not found: {title}")
+    #         object_select = title
+    # except Exception as e:
+    #     logging.error(f"An error occurred: {e}")
+    #     object_select = None
+    # sleep(2)
+    # return object_select
+
+# Function find object
+def _object_find(window, title, auto_id, control_type):
+    object_find = window.child_window(title=title, auto_id=auto_id, control_type=control_type)
+    if not object_find.exists():
+        object_find = title
+    sleep(2)
+    return object_find
 # Function click object by coordinates
 def _object_click_by_coordinates(left, top, right, bottom):
     # Define BoundingRectangle
@@ -63,6 +77,19 @@ def _find_open_window(app):
            sleep(2)
            win.close()
     return is_app
+
+# Function connected wifi
+def get_connected_wifi():
+    try:
+        result = subprocess.check_output(["netsh", "wlan", "show", "interfaces"])
+        result = result.decode("utf-8", errors="ignore")
+        for line in result.split('\n'):
+            if "SSID" in line:
+                ssid = line.split(":")[1].strip()
+                return ssid
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        return None
 
 # target_window = _open_app('Settings')
 # object = target_window.child_window(title='Accessibility', auto_id='', control_type='ListItem')
