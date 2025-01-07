@@ -4,15 +4,12 @@ from time import sleep
 
 from PyQt6.QtWidgets import QTextBrowser
 from PyQt6 import QtWidgets
+from PyQt6 import uic
 from pywinauto import mouse, Desktop, Application
 from pywinauto.findwindows import find_window
 
 from NPC_Auto.lib_common.common_lib import _object_click, _open_app, _object_find, _object_click_by_coordinates, \
     _find_open_window, _scroll_center, _object_find, get_connected_wifi
-from PyQt6 import uic
-import pyautogui
-
-from NPC_Auto.main import target_window
 
 # Initialize UI
 app = QtWidgets.QApplication(sys.argv)
@@ -74,10 +71,9 @@ def _setting(testcase_name, app, dic_object_list):
     else:
         print("Dic object list not match")
 
-    # Focus Home settings
-    home_click = target_window.child_window(title='Home', auto_id='', control_type='ListItem')
-    home_click.click_input()
     write_log_setting(testcase_name, pass_list, fail_list)
+    # Focus Home settings
+    _object_click(target_window, 'Home', '', 'ListItem')
 
 # Function test case setting 3
 def _setting_3():
@@ -493,8 +489,7 @@ def _setting_58():
     else:
         fail_list.append(is_default_app.window_text())
     # Focus Home settings
-    home_click = target_window.child_window(title='Home', auto_id='', control_type='ListItem')
-    home_click.click_input()
+    _object_click(target_window, 'Home', '', 'ListItem')
     write_log_setting('Setting 57', pass_list, fail_list)
 
 # Function Test case setting 63
@@ -513,19 +508,176 @@ def _setting_63():
 
 # Function Test case setting 64
 def _setting_64():
-    connected_wifi = get_connected_wifi()
+    # List result
+    pass_list = []
+    fail_list = []
+
+    # Open app settings
+    target_window = _open_app('Settings')
+    is_network = _object_click(target_window, 'Network & internet', '', 'ListItem')
+
+    # Kết nối với desktop
+    desktop = Desktop(backend="uia")
+
+    # Tìm thanh Taskbar
+    taskbar = desktop.window(class_name="Shell_TrayWnd")
+
+    is_wifi = target_window.child_window(title="Wi-Fi", auto_id="SystemSettings_Network_Wifi_QuickAction_ToggleSwitch", control_type="Button")
+    if is_wifi.exists():
+        is_wifi_state = is_wifi.get_toggle_state()
+        sleep(5)
+        if is_wifi_state == 0:
+            is_wifi.click_input()
+            sleep(15)
+            is_wifi_state = is_wifi.get_toggle_state()
+        if is_wifi_state == 1:
+            connected_wifi = get_connected_wifi()
+            # Icon wifi connected in task bar
+            is_icon_wifi = taskbar.child_window(title=f"Network {connected_wifi}\nInternet access",
+                                                auto_id="SystemTrayIcon", control_type="Button")
+            sleep(2)
+            if is_icon_wifi.exists():
+                pass_list.append('Wifi connected and icon is match')
+            else:
+                fail_list.append('Wifi connected and icon is not match')
+            is_wifi.click_input()
+            sleep(15)
+
+            # Icon global network not connected
+            is_icon_global = taskbar.child_window(title="Network No internet access\nNo connections available",
+                                                  auto_id="SystemTrayIcon", control_type="Button")
+            if is_icon_global.exists():
+                pass_list.append('Wifi not connected and icon is match')
+            else:
+                fail_list.append('Wifi not connected and icon is not match')
+            is_wifi.click_input()
+            sleep(15)
+
+    # Write log setting
+    write_log_setting('Setting 64', pass_list, fail_list)
+    _object_click(target_window, 'Home', '', 'ListItem')
+
+# Function Test case setting 68
+def _setting_68():
+    _open_app('Settings')
+    # dictionaries
+    dic_of_objects = {
+        'title': f'Network & internet, VPN, VPN connections, Advanced settings for all VPN connections',
+        'auto_id': ", , , ",
+        'control_type': 'ListItem, Group, Text, Text',
+        'object_handle': 'click, click, view, view'
+    }
+    _setting("Setting 68", "Settings", dic_of_objects)
+
+# Function Test case setting 69
+def _setting_69():
+    # List result
+    pass_list = []
+    fail_list = []
 
     target_window = _open_app('Settings')
 
-    is_network = _object_click(target_window)
+    # Kết nối với desktop
+    desktop = Desktop(backend="uia")
+
+    # Tìm thanh Taskbar
+    taskbar = desktop.window(class_name="Shell_TrayWnd")
+
+    is_network = target_window.child_window(title='Network & internet', control_type='ListItem')
+    if is_network.exists():
+        is_network.click_input()
+        sleep(2)
+    else:
+        fail_list.append('Network & internet')
+    print(target_window.print_control_identifiers())
+    # airplane mode button
+    is_airplane_mode = target_window.child_window(title="Airplane Mode", auto_id="SystemSettings_Radio_IsAirplaneModeEnabled_ToggleSwitch", control_type="Button")
+    if is_airplane_mode.exists():
+        is_airplane_mode_state = is_airplane_mode.get_toggle_state()
+
+        # Set airplane is ON
+        if is_airplane_mode_state == 0:
+            is_airplane_mode.click_input()
+            sleep(10)
+        is_airplane_mode_state = is_airplane_mode.get_toggle_state()
+        if is_airplane_mode_state == 1:
+            is_airplane_mode_icon = taskbar.child_window(title="Network No internet access\nAirplane mode",
+                                                         auto_id="SystemTrayIcon", control_type="Button")
+            if is_airplane_mode_icon.exists():
+                pass_list.append('Airplane mode is ON, icon is match')
+            else:
+                fail_list.append('Airplane mode is ON, icon is not match')
+            # Set airplane mode is OFF
+            is_airplane_mode.click_input()
+            sleep(10)
+        is_airplane_mode_state = is_airplane_mode.get_toggle_state()
+        if is_airplane_mode_state == 0:
+            connected_wifi = get_connected_wifi()
+            is_icon_wifi = taskbar.child_window(title=f"Network {connected_wifi}\nInternet access",
+                                                auto_id="SystemTrayIcon", control_type="Button")
+            if is_icon_wifi.exists():
+                pass_list.append('Airplane mode is OFF, icon is match')
+            else:
+                fail_list.append('Airplane mode is OFF, icon is not match')
+    else:
+        fail_list.append('Airplane Mode')
+    # Write log setting
+    write_log_setting('Setting 69', pass_list, fail_list)
+    _object_click(target_window, 'Home', '', 'ListItem')
+
+# Function Test Case setting 71
+def _setting_71():
     # dictionaries
     dic_of_objects = {
-        'title': f'Network & internet, Wi-Fi, Wi-Fi, {connected_wifi} properties, Show available networks, Manage known networks, Hardware properties, Random hardware addresses',
-        'auto_id': ", , , , , , , ",
-        'control_type': 'ListItem, Group, Button, Text, Text, Text, Text, Text',
-        'object_handle': 'click, click, view, view, view, view, view, view'
+        'title': f'Network & internet, Mobile hotspot, Share my internet connection from, Share over, Properties',
+        'auto_id': ", , , , ",
+        'control_type': 'ListItem, Group, Text, Text, Text',
+        'object_handle': 'click, click, view, view, view'
     }
-    _setting("Setting 63", "Settings", dic_of_objects)
+    _setting("Setting 71", "Settings", dic_of_objects)
+
+# Function Test Case setting 72
+def _setting_72():
+    # dictionaries
+    dic_of_objects = {
+        'title': f'Network & internet, Proxy, Automatic proxy setup, Manual proxy setup',
+        'auto_id': ", , , ",
+        'control_type': 'ListItem, Group, Text, Text',
+        'object_handle': 'click, click, view, view'
+    }
+    _setting("Setting 72", "Settings", dic_of_objects)
+
+# Function Test Case setting 73
+def _setting_74():
+    # dictionaries
+    dic_of_objects = {
+        'title': 'Personalization, Background, Colors, Themes, Dynamic Lighting, Lock screen, Text input, Start, Taskbar, Fonts, Device usage',
+        'auto_id': ", , , , , , , , , , ",
+        'control_type': 'ListItem, Group, Group, Group, Group, Group, Group, Group, Group, Group, Group',
+        'object_handle': 'click, click, view, view, view, view, view, view, view, view, view'
+    }
+    _setting("Setting 74", "Settings", dic_of_objects)
+
+# Function Test Case setting 22
+def _setting_22():
+    import psutil
+
+    # Lấy thông tin về ổ đĩa C:
+    partition_info = psutil.disk_usage('C:\\')
+    total = round(partition_info.total / (1024 ** 3))  # Dung lượng tổng cộng (GB)
+    # used = partition_info.used / (1024 ** 3)  # Dung lượng đã sử dụng (GB)
+    # free = partition_info.free / (1024 ** 3)  # Dung lượng còn lại (GB)
+
+    # print(f"Tổng dung lượng: {total:.2f} GB")
+
+    dic_of_objects = {
+        'title': f'System, Storage, ‎Local Disk (C:) - {total} GB, Storage management',
+        'auto_id': ", , SystemSettings_StorageSense_Breakdown_TitleTextBlock, ",
+        'control_type': 'ListItem, Group, Text, Text',
+        'object_handle': 'click, click, click, view'
+    }
+    _setting("Setting 22", "Settings", dic_of_objects)
+
 # Call function execute test case
 # _setting_3()
 # _setting_4()
@@ -533,6 +685,7 @@ def _setting_64():
 # _setting_12()
 # _setting_13()
 # _setting_18()
+_setting_22()
 # _setting_31()
 # _setting_32()
 # _setting_33()
@@ -545,7 +698,13 @@ def _setting_64():
 # _setting_55()
 # _setting_57()
 # _setting_58()
-_setting_63()
+# _setting_63()
+# _setting_64()
+# _setting_68()
+# _setting_69()
+# _setting_71()
+# _setting_72()
+# _setting_74()
 
 # Show result on UI
 for result in result_of_testcase:
