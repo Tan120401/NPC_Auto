@@ -1,3 +1,4 @@
 LOG INFORMATION
-*SETTING 22
--List of pass: System, Storage, ‎Local Disk (C:) - 931 GB, Storage management
+*SETTING 32
+-List of pass: Troubleshoot
+-List of fail: Other troubleshooters

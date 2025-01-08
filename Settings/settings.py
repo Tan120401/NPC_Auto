@@ -9,7 +9,7 @@ from pywinauto import mouse, Desktop, Application
 from pywinauto.findwindows import find_window
 
 from NPC_Auto.lib_common.common_lib import _object_click, _open_app, _object_find, _object_click_by_coordinates, \
-    _find_open_window, _scroll_center, _object_find, get_connected_wifi
+    _find_open_window, _scroll_center, _object_find, get_connected_wifi, _object_click_within_group
 
 # Initialize UI
 app = QtWidgets.QApplication(sys.argv)
@@ -58,13 +58,13 @@ def _setting(testcase_name, app, dic_object_list):
 
     # Check that the lengths of the lists match
     if len(titles) == len(control_types) == len(auto_ids) == len(object_handles):
-        is_exist = True
         for title, auto_id, control_type, object_handle in zip(titles, auto_ids, control_types, object_handles):
+            object_result =[]
             if object_handle == 'click':
-                is_exist = _object_click(target_window, title, auto_id, control_type)
+                object_result = _object_click(target_window, title, auto_id, control_type)
             elif object_handle == 'view':
-                is_exist = _object_find(target_window, title, auto_id, control_type)
-            if isinstance(is_exist, target_window.child_window().__class__):
+                object_result = _object_find(target_window, title, auto_id, control_type)
+            if object_result[0]:
                 pass_list.append(title)
             else:
                 fail_list.append(title)
@@ -152,19 +152,20 @@ def _setting_31():
     # The List contains the pass fail objects
     pass_list = []
     fail_list = []
+
     titles = ['Activation', 'Activation state, Active', 'Upgrade your edition of Windows', 'Change product key']
     control_types = ['Group', 'Group', 'Group', 'Text']
     auto_ids = ['', '', '', '']
     object_handles = ['click', 'view', 'click', 'view']
     # Check that the lengths of the lists match
     if len(titles) == len(control_types) == len(auto_ids) == len(object_handles):
-        is_exist = True
+        object_result = []
         for title, auto_id, control_type, object_handle in zip(titles, auto_ids, control_types, object_handles):
             if object_handle == 'click':
-                is_exist = _object_click(target_window, title, auto_id, control_type)
+                object_result = _object_click(target_window, title, auto_id, control_type)
             elif object_handle == 'view':
-                is_exist = _object_find(target_window, title, auto_id, control_type)
-            if isinstance(is_exist, target_window.child_window().__class__):
+                object_result = _object_find(target_window, title, auto_id, control_type)
+            if object_result[0]:
                 pass_list.append(title)
             else:
                 fail_list.append(title)
@@ -172,59 +173,59 @@ def _setting_31():
         print("Dic object list không đồng nhất")
 
     # Focus Home settings
-    home_click = target_window.child_window(title='Home', auto_id='', control_type='ListItem')
-    home_click.click_input()
     write_log_setting('Setting 31', pass_list, fail_list)
+    _object_click(target_window, 'Home', '', 'ListItem')
 
 # Function test case setting 32
 def _setting_32():
     target_window = _open_app('Settings')
     _object_click(target_window, 'System', '', 'ListItem')
-
     # Scroll down
     _scroll_center(target_window, 'Storage', '', 'Group')
-
     # The List contains the pass fail objects
     pass_list = []
     fail_list = []
 
-    is_troubleshoot = _object_click(target_window, 'Troubleshoot', '', 'Text')
+    is_troubleshoot = _object_click(target_window, 'Troubleshoot', '', 'Group')
     is_other_troubleshoot = _object_click(target_window, 'Other troubleshooters', '', 'Text')
 
     # Assess object pass/fail
     list_of_object = [is_troubleshoot, is_other_troubleshoot]
     for obj in list_of_object:
-        if isinstance(obj, target_window.child_window().__class__):
-            pass_list.append(obj.window_text())
+        if obj[0]:
+            pass_list.append(obj[1])
         else:
-            fail_list.append(obj)
-
+            fail_list.append(obj[1])
     # Click troubleshoot audio
-    is_audio = _object_click(target_window, 'Audio', '', 'Text')
-    if is_audio:
-        _object_click_by_coordinates(2448, 314, 2708, 378)
+    print(target_window.print_control_identifiers())
+    is_audio = _object_click(target_window, 'Audio', '', 'Group')
+
+    if is_audio[0]:
+        # _object_click_by_coordinates(2448, 314, 2708, 378)
+        # is_audio_run = _object_click(target_window, 'Run', 'TroubleshooterCollection_1_Button', 'Button')
+        is_audio_run = _object_click_within_group(is_audio[2], 'Run', 'TroubleshooterCollection_1_Button', 'Button')
+        print(is_audio_run)
         sleep(2)
         is_audio_troubleshoot = _find_open_window('Get Help')
         if is_audio_troubleshoot:
             pass_list.append('Audio Troubleshoot normally')
         else:
             fail_list.append('Audio Troubleshoot abnormally')
-
-    # Click troubleshoot audio
-    is_network = _object_click(target_window, 'Network and Internet', '', 'Text')
-    if is_network:
-        _object_click_by_coordinates(2448, 458, 2708, 522)
-        sleep(2)
-        is_audio_troubleshoot = _find_open_window('Get Help')
-        if is_audio_troubleshoot:
-            pass_list.append('Network and Internet Troubleshoot normally')
-        else:
-            fail_list.append('Network and Internet Troubleshoot abnormally')
+    # print(target_window.print_control_identifiers())
+    # # Click troubleshoot audio
+    # is_network = _object_click(target_window, 'Network and Internet', '', 'Text')
+    # if is_network:
+    #     _object_click_by_coordinates(2448, 458, 2708, 522)
+    #     sleep(2)
+    #     is_audio_troubleshoot = _find_open_window('Get Help')
+    #     if is_audio_troubleshoot:
+    #         pass_list.append('Network and Internet Troubleshoot normally')
+    #     else:
+    #         fail_list.append('Network and Internet Troubleshoot abnormally')
 
     #Focus Home settings
-    home_click = target_window.child_window(title='Home', auto_id='', control_type='ListItem')
-    home_click.click_input()
     write_log_setting('Setting 32', pass_list, fail_list)
+    _object_click(target_window, 'Home', '', 'ListItem')
 
 # Function test case setting 33
 def _setting_33():
@@ -238,7 +239,7 @@ def _setting_33():
     dic_of_objects = {
         'title': 'Recovery, Reset this PC, Advanced startup',
         'auto_id': ", , ",
-        'control_type': 'Text, Text, Text',
+        'control_type': 'Group, Text, Text',
         'object_handle': 'click, view, view'
     }
     _setting("Setting 33", "Settings", dic_of_objects)
@@ -677,7 +678,85 @@ def _setting_22():
         'object_handle': 'click, click, click, view'
     }
     _setting("Setting 22", "Settings", dic_of_objects)
+def _setting_24():
+    target_window = _open_app('Settings')
+    # List of result
+    pass_list = []
+    fail_list = []
 
+    is_system = _object_click(target_window, 'System', '', 'ListItem')
+    is_storage = _object_click(target_window, 'Storage', '', 'Group')
+    object_check_list = [is_system, is_storage]
+
+    for obj in object_check_list:
+        if obj[0]:
+            pass_list.append(obj[1])
+        else:
+            fail_list.append(obj[1])
+
+    is_storage_sense_toggle = _object_find(target_window,'Storage Sense','SystemSettings_StorageSense_SmartPoliciesAdvanced_GlobalToggleRejuv_ToggleSwitch','Button')
+    if is_storage_sense_toggle[0]:
+        is_storage_sense_state = is_storage_sense_toggle[2].get_toggle_state()
+        if is_storage_sense_state == 1:
+            # Click storage OFF
+            is_storage_sense_toggle[2].click_input()
+            sleep(2)
+            is_storage_sense_state = is_storage_sense_toggle[2].get_toggle_state()
+            if is_storage_sense_state == 0:
+                pass_list.append('Storage Sense set OFF normally')
+            else:
+                fail_list.append('Storage Sense set OFF abnormally')
+
+            # Click storage ON
+            is_storage_sense_toggle[2].click_input()
+            sleep(2)
+            is_storage_sense_state = is_storage_sense_toggle[2].get_toggle_state()
+            if is_storage_sense_state == 1:
+                pass_list.append('Storage Sense set ON normally')
+            else:
+                fail_list.append('Storage Sense set ON abnormally')
+        else:
+            # Click storage ON
+            is_storage_sense_toggle[2].click_input()
+            sleep(2)
+            is_storage_sense_state = is_storage_sense_toggle[2].get_toggle_state()
+            if is_storage_sense_state == 1:
+                pass_list.append('Storage Sense set ON normally')
+            else:
+                fail_list.append('Storage Sense set ON abnormally')
+
+            # Click storage OFF
+            is_storage_sense_toggle[2].click_input()
+            sleep(2)
+            is_storage_sense_state = is_storage_sense_toggle[2].get_toggle_state()
+            if is_storage_sense_state == 0:
+                pass_list.append('Storage Sense set OFF normally')
+            else:
+                fail_list.append('Storage Sense set OFF abnormally')
+        # Click storage sense
+        is_storage_sense_state = is_storage_sense_toggle[2].get_toggle_state()
+        if is_storage_sense_state == 1:
+            is_storage_sense = _object_click(target_window, 'Storage Sense', '', 'Group')
+        else:
+            is_storage_sense_toggle.click_input()
+            is_storage_sense = _object_click(target_window, 'Storage Sense', '', 'Group')
+
+        # Scroll
+        _scroll_center(target_window, 'Configure cleanup schedules', '', 'Text')
+        # Run Storage Sense now'
+        is_run_storage_sense = _object_click(target_window, 'Run Storage Sense now',
+                                             'SystemSettings_StorageSense_SmartPolicy_ExecuteNow_ApplyButton',
+                                             'Button')
+        if is_run_storage_sense[0]:
+            pass_list.append(is_run_storage_sense[1])
+        else:
+            fail_list.append(is_run_storage_sense[1])
+    else:
+        fail_list.append('Storage Sense')
+
+    # Write log setting
+    write_log_setting('Setting 24', pass_list, fail_list)
+    _object_click(target_window, 'Home', '', 'ListItem')
 # Call function execute test case
 # _setting_3()
 # _setting_4()
@@ -685,9 +764,10 @@ def _setting_22():
 # _setting_12()
 # _setting_13()
 # _setting_18()
-_setting_22()
+# _setting_22()
+# _setting_24()
 # _setting_31()
-# _setting_32()
+_setting_32()
 # _setting_33()
 # _setting_38()
 # _setting_41()
